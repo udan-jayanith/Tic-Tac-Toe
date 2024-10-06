@@ -1,48 +1,107 @@
 let map = ['', '', '', '', '', '', '', '', '']
-
-navigator.mediaDevices
-	.getUserMedia({audio: true})
-	.then(function (stream) {
-		console.log('Microphone access granted')
-		// You can now use the audio stream
-	})
-	.catch(function (err) {
-		console.log('Microphone access denied', err)
-	})
-
+const turn = document.querySelector('.turn')
+let clickCounter = 1
+let xORo = 'x'
 
 function checkConditions() {
 	if (map[0] != '' && map[0] == map[4] && map[4] == map[8]) {
-		console.log('/ won')
+		makeRed(0, 4, 8, map[0], 'Won')
 	} else if (map[2] != '' && map[2] == map[4] && map[4] == map[6]) {
-		console.log('| won')
+		makeRed(2, 4, 6, map[2], 'Won')
 	}
 
 	//columns
 	for (let i = 0; i < 3; i++) {
 		if (map[i] != '' && map[i] == map[i + 3] && map[i + 3] == map[i + 6]) {
-			console.log('for loop condition one')
+			makeRed(i, i + 3, i + 6, map[i], 'Won')
 		}
 	}
 
 	//row
 	for (let i = 0; i < 7; i += 3) {
 		if (map[i] != '' && map[i] == map[i + 1] && map[i + 1] == map[i + 2]) {
-			console.log('for loop condition two')
+			makeRed(i, i + 1, i + 2, map[i], 'Won')
 		}
 	}
 }
 
-let clickCounter = 1
-let xORo = 'x'
-const turn = document.querySelector('.turn')
+let validator = true
+const gameOver = new Audio('sound Effects/game-over.mp3')
+
+function makeRed(index1, index2, index3, player, status) {
+	validator = false
+	document.querySelectorAll('.cell').forEach((el, i) => {
+		if (i == index1 || i == index2 || i == index3) {
+			el.style.color = 'hsl(2, 89%, 34%)'
+			turn.innerText = `${player.toUpperCase()} ${status}`
+		}
+	})
+
+	if (player == 'none') {
+		document.querySelectorAll('.cell').forEach((el, i) => {
+			el.style.color = 'hsl(2, 89%, 34%)'
+			turn.innerText = `Tie`
+		})
+	}
+	gameOver.play()
+
+	const ResetGameBtn = document.querySelector('.reset-game-btn')
+	ResetGameBtn.style.display = 'block'
+
+	ResetGameBtn.addEventListener('click', () => {
+		map = ['', '', '', '', '', '', '', '', '']
+		document.querySelector('.board').innerHTML = `
+				<div class="cell" data-value="t" data-index="0"></div>
+				<div class="cell" data-value="t" data-index="1"></div>
+				<div class="cell" data-value="t" data-index="2"></div>
+				<div class="cell" data-value="t" data-index="3"></div>
+				<div class="cell" data-value="t" data-index="4"></div>
+				<div class="cell" data-value="t" data-index="5"></div>
+				<div class="cell" data-value="t" data-index="6"></div>
+				<div class="cell" data-value="t" data-index="7"></div>
+				<div class="cell" data-value="t" data-index="8"></div>
+		`
+		validator = true
+		turn.innerText = "X's Turn"
+		clickCounter = 1
+		xORo = 'x'
+		ResetGameBtn.style.display = 'none'
+	})
+}
+
+function audioToPlay(audio) {
+	audio
+		.play()
+		.then(() => {
+			document.querySelector('.dialog-backdrop').style.display = 'none'
+		})
+		.catch(() => {
+			const audioPermission = document.querySelector('.audio-permission')
+			audioPermission.style.display = 'flex'
+		})
+}
+
+const tapEffect = new Audio('sound Effects/click.mp3')
+const backgroundMusic = new Audio('sound Effects/Background-music.mp3')
+
+audioToPlay(backgroundMusic)
+backgroundMusic.volume = 0.2
+backgroundMusic.addEventListener('ended', function () {
+	backgroundMusic.currentTime = 0 // Reset the audio to the beginning
+	audioToPlay(backgroundMusic)
+})
 
 const board = document.querySelector('.board')
 board.onclick = function (event) {
 	const target = event.target
 
-	if (target.className != 'cell' || target.dataset.value == 'f') return 0
-	if (clickCounter >= 9) console.log('draw')
+	if (target.className != 'cell' || target.dataset.value == 'f' || !validator)
+		return 0
+	if (clickCounter >= 9) {
+		makeRed(-1, -1, -1, 'none', 'Draw')
+	}
+
+	audioToPlay(tapEffect)
 
 	if (xORo == 'x') {
 		target.innerText = 'X'
@@ -64,4 +123,12 @@ board.onclick = function (event) {
 	clickCounter++
 }
 
-//https://in.pinterest.com/pin/pen-and-transprent-png-paint-brush-png-black-transparent-png-transparent-png-image-pngit--790944753322047070/
+document.querySelector('.playBtn').addEventListener('click', () => {
+	tapEffect.play()
+
+	const audioPermission = document.querySelector('.audio-permission')
+	audioPermission.style.display = 'none'
+	backgroundMusic.play()
+
+	document.querySelector('.dialog-backdrop').style.display = 'none'
+})
