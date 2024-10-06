@@ -27,7 +27,7 @@ body {
 	display: grid;
 	grid-template-columns: repeat(3, 18vh);
 	grid-template-rows: repeat(3, 18vh);
-	gap: 12px;
+	gap: 16px;
 
 	background-image: url(bg.png);
 	background-size: cover;
@@ -166,10 +166,10 @@ button:hover {
 	transform: translate(-50%, -50%);
 }
 .reset-game-btn{
-	width: 10%;
+	width: fit-content;
 	height: fit-content;
 	font-size: larger;
 	margin-bottom: 10px;
 	display: none;
-	padding: 12px 6px;
+	padding: 12px 16px;
 }

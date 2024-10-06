@@ -1,19 +1,23 @@
 let map = ['', '', '', '', '', '', '', '', '']
 const turn = document.querySelector('.turn')
-let clickCounter = 1
+let clickCounter = 0
 let xORo = 'x'
+let counter = 0
 
 function checkConditions() {
 	if (map[0] != '' && map[0] == map[4] && map[4] == map[8]) {
 		makeRed(0, 4, 8, map[0], 'Won')
+		return 0
 	} else if (map[2] != '' && map[2] == map[4] && map[4] == map[6]) {
 		makeRed(2, 4, 6, map[2], 'Won')
+		return 0
 	}
 
 	//columns
 	for (let i = 0; i < 3; i++) {
 		if (map[i] != '' && map[i] == map[i + 3] && map[i + 3] == map[i + 6]) {
 			makeRed(i, i + 3, i + 6, map[i], 'Won')
+			return 0
 		}
 	}
 
@@ -21,7 +25,14 @@ function checkConditions() {
 	for (let i = 0; i < 7; i += 3) {
 		if (map[i] != '' && map[i] == map[i + 1] && map[i + 1] == map[i + 2]) {
 			makeRed(i, i + 1, i + 2, map[i], 'Won')
+			return 0
 		}
+	}
+
+	counter++
+	if (counter >= 9) {
+		makeRed(-1, -1, -1, 'none', 'Draw')
+		return 0
 	}
 }
 
@@ -33,15 +44,16 @@ function makeRed(index1, index2, index3, player, status) {
 	document.querySelectorAll('.cell').forEach((el, i) => {
 		if (i == index1 || i == index2 || i == index3) {
 			el.style.color = 'hsl(2, 89%, 34%)'
-			turn.innerText = `${player.toUpperCase()} ${status}`
 		}
 	})
+
+	turn.innerText = `${player.toUpperCase()} ${status}`
 
 	if (player == 'none') {
 		document.querySelectorAll('.cell').forEach((el, i) => {
 			el.style.color = 'hsl(2, 89%, 34%)'
-			turn.innerText = `Tie`
 		})
+		turn.innerText = `Tie`
 	}
 	gameOver.play()
 
@@ -63,9 +75,10 @@ function makeRed(index1, index2, index3, player, status) {
 		`
 		validator = true
 		turn.innerText = "X's Turn"
-		clickCounter = 1
+		clickCounter = 0
 		xORo = 'x'
 		ResetGameBtn.style.display = 'none'
+		counter = 0
 	})
 }
 
@@ -85,7 +98,7 @@ const tapEffect = new Audio('sound Effects/click.mp3')
 const backgroundMusic = new Audio('sound Effects/Background-music.mp3')
 
 audioToPlay(backgroundMusic)
-backgroundMusic.volume = 0.2
+backgroundMusic.volume = 0.16
 backgroundMusic.addEventListener('ended', function () {
 	backgroundMusic.currentTime = 0 // Reset the audio to the beginning
 	audioToPlay(backgroundMusic)
@@ -97,9 +110,6 @@ board.onclick = function (event) {
 
 	if (target.className != 'cell' || target.dataset.value == 'f' || !validator)
 		return 0
-	if (clickCounter >= 9) {
-		makeRed(-1, -1, -1, 'none', 'Draw')
-	}
 
 	audioToPlay(tapEffect)
 
@@ -120,7 +130,6 @@ board.onclick = function (event) {
 	}
 
 	checkConditions()
-	clickCounter++
 }
 
 document.querySelector('.playBtn').addEventListener('click', () => {
