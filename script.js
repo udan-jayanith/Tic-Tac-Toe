@@ -6,17 +6,17 @@ let counter = 0
 
 function checkConditions() {
 	if (map[0] != '' && map[0] == map[4] && map[4] == map[8]) {
-		makeRed(0, 4, 8, map[0], 'Won')
+		finishMatch(0, 4, 8, map[0], 'Won')
 		return 0
 	} else if (map[2] != '' && map[2] == map[4] && map[4] == map[6]) {
-		makeRed(2, 4, 6, map[2], 'Won')
+		finishMatch(2, 4, 6, map[2], 'Won')
 		return 0
 	}
 
 	//columns
 	for (let i = 0; i < 3; i++) {
 		if (map[i] != '' && map[i] == map[i + 3] && map[i + 3] == map[i + 6]) {
-			makeRed(i, i + 3, i + 6, map[i], 'Won')
+			finishMatch(i, i + 3, i + 6, map[i], 'Won')
 			return 0
 		}
 	}
@@ -24,14 +24,14 @@ function checkConditions() {
 	//row
 	for (let i = 0; i < 7; i += 3) {
 		if (map[i] != '' && map[i] == map[i + 1] && map[i + 1] == map[i + 2]) {
-			makeRed(i, i + 1, i + 2, map[i], 'Won')
+			finishMatch(i, i + 1, i + 2, map[i], 'Won')
 			return 0
 		}
 	}
 
 	counter++
 	if (counter >= 9) {
-		makeRed(-1, -1, -1, 'none', 'Draw')
+		finishMatch(-1, -1, -1, 'none', 'Draw')
 		return 0
 	}
 }
@@ -39,7 +39,7 @@ function checkConditions() {
 let validator = true
 const gameOver = new Audio('sound Effects/game-over.mp3')
 
-function makeRed(index1, index2, index3, player, status) {
+function finishMatch(index1, index2, index3, player, status) {
 	validator = false
 	document.querySelectorAll('.cell').forEach((el, i) => {
 		if (i == index1 || i == index2 || i == index3) {
